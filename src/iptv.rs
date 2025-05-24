@@ -48,7 +48,7 @@ async fn get_base_url(client: &Client, args: &Args) -> Result<String> {
     let params = [("Action", "Login"), ("return_type", "1"), ("UserID", user)];
 
     let url = reqwest::Url::parse_with_params(
-        "http://eds.iptv.gd.cn:8082/EDS/jsp/AuthenticationURL",
+        "http://182.138.3.142:8082/EDS/jsp/AuthenticationURL",
         params,
     )?;
 

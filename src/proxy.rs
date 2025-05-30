@@ -115,16 +115,11 @@ pub(crate) fn udp(
 
         let mut interface = Ipv4Addr::new(0, 0, 0, 0);
         if let Some(ref i) = if_name {
-            use log::debug;
             let network_interfaces = list_afinet_netifas()?;
-            for (name, ip) in network_interfaces.iter() {
-                debug!("{}: {}", name, ip);
-                if name != i {
-                    continue;
-                }
+            if let Some((_, ip)) = network_interfaces.iter()
+                .find(|(name, _)| name == i) {
                 if let IpAddr::V4(ip) = ip {
                     interface = *ip;
-                    break;
                 }
             }
         }

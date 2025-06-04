@@ -5,27 +5,23 @@ Usage: iptv [OPTIONS]
 Options:
   -b, --bind <BIND>                      Bind address:port [default: 127.0.0.1:7878]
   -I, --interface <INTERFACE>            Interface to request
-      --udp-proxy                        Use UDP proxy
-      --rtsp-proxy                       Use rtsp proxy
   -h, --help                             Print help
 ```
 
 ### Example init.d
 
+create file `/etc/init.d/iptv`
 ```sh
 #!/bin/sh /etc/rc.common
 
 START=99
 STOP=99
 
-MAC=
-USER=
-PASSWD=
-INTERFACE=pppoe-iptv
-BIND=0.0.0.0:7878
+INTERFACE=eth1.43
+BIND=0.0.0.0:4022
 
 start() {
-        ( RUST_LOG=info /usr/bin/iptv -u $USER -p $PASSWD -m $MAC -b $BIND -I $INTERFACE --udp-proxy --rtsp-proxy 2>&1 & echo $! >&3 ) 3>/var/run/iptv.pid | logger -t "iptv-proxy" &
+        ( RUST_LOG=info /usr/bin/iptv -b $BIND -I $INTERFACE 2>&1 & echo $! >&3 ) 3>/var/run/iptv.pid | logger -t "iptv-proxy" &
 }
 
 stop() {
@@ -34,6 +30,11 @@ stop() {
                 rm -f /var/run/iptv.pid
         fi
 }
+```
+
+```shell
+/etc/init.d/iptv enable 
+/etc/init.d/iptv start
 ```
 
 ### Build for openwrt

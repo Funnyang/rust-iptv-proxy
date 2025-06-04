@@ -1,5 +1,6 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddrV4};
 
+use crate::interface::get_interface_ip;
 use actix_web::web::Bytes;
 use anyhow::Result;
 use async_stream::stream;
@@ -79,8 +80,7 @@ pub(crate) fn rtsp(url: String, if_name: Option<String>) -> impl Stream<Item = R
         });
 
         loop {
-            let stream = rx.recv().await;
-            if let Some(stream) = stream {
+            if let Some(stream) = rx.recv().await {
                 yield Ok(stream);
             } else {
                 error!("Connection closed");
@@ -113,16 +113,11 @@ pub(crate) fn udp(
             UdpSocket::from_std(socket.into())?
         };
 
-        let mut interface = Ipv4Addr::new(0, 0, 0, 0);
-        if let Some(ref i) = if_name {
-            let network_interfaces = list_afinet_netifas()?;
-            if let Some((_, ip)) = network_interfaces.iter()
-                .find(|(name, _)| name == i) {
-                if let IpAddr::V4(ip) = ip {
-                    interface = *ip;
-                }
-            }
-        }
+        let interface = if let Some(ref i) = if_name {
+            get_interface_ip(i)?
+        } else {
+            Ipv4Addr::new(0, 0, 0, 0)
+        };
 
         socket.set_multicast_loop_v4(true)?;
 
@@ -159,8 +154,7 @@ pub(crate) fn udp(
         });
 
         loop {
-            let stream = rx.recv().await;
-            if let Some(stream) = stream {
+            if let Some(stream) = rx.recv().await {
                 yield Ok(stream);
             } else {
                 error!("Connection closed");

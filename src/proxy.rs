@@ -1,4 +1,4 @@
-use std::net::{IpAddr, Ipv4Addr, SocketAddrV4};
+use std::net::{Ipv4Addr, SocketAddrV4};
 
 use crate::interface::get_interface_ip;
 use actix_web::web::Bytes;

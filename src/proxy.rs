@@ -7,7 +7,7 @@ use async_stream::stream;
 use futures_core::stream::Stream;
 use futures_util::stream::StreamExt;
 use local_ip_address::list_afinet_netifas;
-use log::{error, info};
+use log::{debug, error, info};
 use reqwest::Url;
 use retina::client::{PacketItem, Session, SessionOptions};
 use rtp_rs::RtpReader;
@@ -34,7 +34,6 @@ pub(crate) fn rtsp(url: String, if_name: Option<String>) -> impl Stream<Item = R
         let mut options = SessionOptions::default().follow_redirects(true);
         #[cfg(not(any(target_os = "android", target_os = "fuchsia", target_os = "linux")))]
         if let Some(ref i) = if_name {
-            use log::debug;
             let network_interfaces = list_afinet_netifas()?;
             for (name, ip) in network_interfaces.iter() {
                 debug!("{}: {}", name, ip);
@@ -49,6 +48,7 @@ pub(crate) fn rtsp(url: String, if_name: Option<String>) -> impl Stream<Item = R
         if let Some(i) = if_name {
             options = options.bind(i);
         }
+        debug!("rtsp: {}", url);
         let mut session = match Session::describe(Url::parse(&url)?, options).await {
             Ok(s) => s,
             Err(e) => {

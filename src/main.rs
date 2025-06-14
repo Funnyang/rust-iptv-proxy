@@ -15,7 +15,6 @@ mod args;
 use args::Args;
 
 mod proxy;
-mod interface;
 
 #[get("/rtsp/{tail:.*}")]
 async fn rtsp(

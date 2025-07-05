@@ -86,6 +86,8 @@ pub(crate) fn rtsp(url: String, if_name: Option<String>) -> impl Stream<Item = R
                 break;
             }
         }
+
+        info!("RTSP proxy exit");
     }
 }
 
@@ -165,5 +167,7 @@ pub(crate) fn udp(
                 break;
             }
         }
+
+        info!("Udp proxy exit");
     }
 }
